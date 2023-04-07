@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "firebaseLogin": "node node_modules/firebase-tools/lib/bin/firebase.js login"
+    "firebase-login": "firebase login",
+    "firebase-init": "firebase init"
   },
   "devDependencies": {
     "firebase-tools": "^11.25.2"
