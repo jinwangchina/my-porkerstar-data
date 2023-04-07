@@ -1,0 +1,14 @@
+{
+  "name": "my-porkerstar-data",
+  "description": "Firebase functions",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "firebaseLogin": "node node_modules/firebase-tools/lib/bin/firebase.js login"
+  },
+  "devDependencies": {
+    "firebase-tools": "^11.25.2"
+  },
+  "dependencies": {
+  }
+}
