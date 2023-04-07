@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="nodeSetup" />
+          <option value="initProject" />
         </list>
       </option>
       <option name="vmOptions" value="" />

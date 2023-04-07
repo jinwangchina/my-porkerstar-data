@@ -8,8 +8,5 @@
     <node-interpreter value="$PROJECT_DIR$/.gradle/nodejs/node-v18.15.0-win-x64/node" />
     <package-manager value="$PROJECT_DIR$/.gradle/nodejs/node-v18.15.0-win-x64/npm.cmd" />
     <envs />
-    <method v="2">
-      <option name="Gradle.BeforeRunTask" enabled="true" tasks="installFunctionPackages" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="" />
-    </method>
   </configuration>
 </component>

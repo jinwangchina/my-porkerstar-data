@@ -22,3 +22,7 @@ task installFunctionPackages( type: NpmTask, dependsOn: installPackages ) {
     args = [ "install" ]
 }
 
+task initProject( dependsOn: installFunctionPackages ) {
+
+}
+
