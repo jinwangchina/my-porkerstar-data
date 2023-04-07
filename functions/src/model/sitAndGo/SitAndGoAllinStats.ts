@@ -8,7 +8,6 @@ export interface SitAndGoAllinStatsData {
 }
 
 export default interface SitAndGoAllinStats {
-    id: string;
     dateTime: Date;
     buyIn: number;
     buyInMpData: SitAndGoAllinStatsData;

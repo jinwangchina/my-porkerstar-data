@@ -5,7 +5,6 @@ export interface SitAndGoGameStatsData {
 }
 
 export default interface SitAndGoGameStats {
-    id: string;
     dateTime: Date;
     buyIn: number;
     buyInData: SitAndGoGameStatsData;
