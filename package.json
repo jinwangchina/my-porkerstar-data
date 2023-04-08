@@ -5,10 +5,12 @@
   "private": true,
   "scripts": {
     "firebase-login": "firebase login",
-    "firebase-init": "firebase init"
+    "firebase-init": "firebase init",
+    "create-react-app": "create-react-app"
   },
   "devDependencies": {
-    "firebase-tools": "^11.25.2"
+    "firebase-tools": "^11.25.2",
+    "create-react-app": "^5.0.1"
   },
   "dependencies": {
   }
