@@ -1,0 +1,18 @@
+{
+  "name": "common",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "engines": {
+    "node": "16"
+  },
+  "dependencies": {
+    "randomstring": "^1.2.3"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0",
+    "@types/randomstring": "^1.1.8"
+  },
+  "private": true
+}

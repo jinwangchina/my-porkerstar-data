@@ -17,12 +17,17 @@ task installPackages( type: NpmTask, dependsOn: nodeSetup ) {
     args = [ "install" ]
 }
 
-task installFunctionPackages( type: NpmTask, dependsOn: installPackages ) {
+task installCommonPackage( type: NpmTask, dependsOn: installPackages ) {
+    workingDir = new File( "$rootDir/common/" )
+    args = [ "install" ]
+}
+
+task installFunctionPackage( type: NpmTask, dependsOn: installCommonPackage ) {
     workingDir = new File( "$rootDir/functions/" )
     args = [ "install" ]
 }
 
-task initProject( dependsOn: installFunctionPackages ) {
+task initProject( dependsOn: installFunctionPackage ) {
 
 }
 
