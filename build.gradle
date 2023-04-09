@@ -34,17 +34,17 @@ task cleanCommon( type: Delete ) {
 
 // Frontend *******************************
 task installFrontendPackage( type: NpmTask, dependsOn: installCommonPackage ) {
-    workingDir = new File( "$rootDir/front-end-app/" )
+    workingDir = new File( "$rootDir/frontend/" )
     args = [ "install" ]
 }
 
 task buildFrontend( type: NpmTask, dependsOn: [installFrontendPackage, buildCommon] ) {
-    workingDir = new File( "$rootDir/front-end-app/" )
+    workingDir = new File( "$rootDir/frontend/" )
     args = [ "run", "build" ]
 }
 
 task cleanFrontend( type: Delete ) {
-    delete = [ "front-end-app/build" ]
+    delete = [ "frontend/build" ]
 }
 
 // Functions *******************************
