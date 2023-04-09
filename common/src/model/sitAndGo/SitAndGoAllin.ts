@@ -1,6 +1,6 @@
-import {AllinType, Result} from "../Base";
+import {AllinType, BaseModel, Result} from "../Base";
 
-export default interface SitAndGoAllin {
+export default interface SitAndGoAllin extends BaseModel {
     dateTime: Date;
     buyIn: number;
     type: AllinType;

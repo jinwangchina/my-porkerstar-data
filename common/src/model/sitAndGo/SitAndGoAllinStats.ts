@@ -1,4 +1,4 @@
-import {AllinType} from "../Base";
+import {AllinType, BaseModel} from "../Base";
 
 export interface SitAndGoAllinStatsData {
     type: AllinType;
@@ -7,7 +7,7 @@ export interface SitAndGoAllinStatsData {
     winRate: number;
 }
 
-export default interface SitAndGoAllinStats {
+export default interface SitAndGoAllinStats extends BaseModel {
     dateTime: Date;
     buyIn: number;
     buyInMpData: SitAndGoAllinStatsData;

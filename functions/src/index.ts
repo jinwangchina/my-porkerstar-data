@@ -1,12 +1,22 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import {ctx} from "./context/Context";
-import {getMessage} from "common/lib/util/Util";
 
 admin.initializeApp();
 
-export const addGame = functions.https.onRequest(async (request, response) => {
-  ctx.logMgr.info( "Adding game: ", request.body );
-  await ctx.service.sitAndGoService.addGame( request.body as any );
-  response.send("OK4: " + getMessage());
-});
+export const createGame = functions.https.onRequest(
+    async (request, response) => {
+        ctx.logMgr.info( "Creating game ..." );
+        const game = ctx.service.sitAndGoService.fromRequestBody( request.body );
+        await ctx.service.sitAndGoService.createGame( game );
+        response.send( "OK" );
+    }
+);
+
+export const getLastGame = functions.https.onRequest(
+    async (request, response) => {
+        ctx.logMgr.info( "Getting last game ..." );
+        const lastGame = await ctx.service.sitAndGoService.getLastGame();
+        response.send( lastGame );
+    }
+);
