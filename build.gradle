@@ -13,26 +13,61 @@ node {
     download = true
 }
 
-task installPackages( type: NpmTask, dependsOn: nodeSetup ) {
+task installRootPackage( type: NpmTask, dependsOn: nodeSetup ) {
     args = [ "install" ]
 }
 
-task installCommonPackage( type: NpmTask, dependsOn: installPackages ) {
+// Common *******************************
+task installCommonPackage( type: NpmTask, dependsOn: installRootPackage ) {
     workingDir = new File( "$rootDir/common/" )
     args = [ "install" ]
 }
 
+task buildCommon( type: NpmTask, dependsOn: installCommonPackage ) {
+    workingDir = new File( "$rootDir/common/" )
+    args = [ "run", "build" ]
+}
+
+task cleanCommon( type: Delete ) {
+    delete = [ "common/lib" ]
+}
+
+// Frontend *******************************
 task installFrontendPackage( type: NpmTask, dependsOn: installCommonPackage ) {
     workingDir = new File( "$rootDir/front-end-app/" )
     args = [ "install" ]
 }
 
-task installFunctionPackage( type: NpmTask, dependsOn: installFrontendPackage ) {
+task buildFrontend( type: NpmTask, dependsOn: [installFrontendPackage, buildCommon] ) {
+    workingDir = new File( "$rootDir/front-end-app/" )
+    args = [ "run", "build" ]
+}
+
+task cleanFrontend( type: Delete ) {
+    delete = [ "front-end-app/build" ]
+}
+
+// Functions *******************************
+task installFunctionsPackage( type: NpmTask, dependsOn: installCommonPackage ) {
     workingDir = new File( "$rootDir/functions/" )
     args = [ "install" ]
 }
 
-task initProject( dependsOn: installFunctionPackage ) {
+task buildFunctions( type: NpmTask, dependsOn: [installFunctionsPackage, buildCommon] ) {
+    workingDir = new File( "$rootDir/functions/" )
+    args = [ "run", "build" ]
+}
 
+task cleanFunctions( type: Delete ) {
+    delete = [ "functions/lib" ]
+}
+
+// Global *******************************
+task buildProject( dependsOn: [buildFrontend, buildFunctions] ) {
+    group = "application"
+}
+
+task cleanProject( dependsOn: [cleanCommon, cleanFrontend, cleanFunctions] ) {
+    group = "application"
 }
 
