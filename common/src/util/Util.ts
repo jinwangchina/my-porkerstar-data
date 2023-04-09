@@ -1,5 +1,5 @@
 import * as randomstring from "randomstring";
 
 export const getMessage = () => {
-    return "from common: " + randomstring.generate();
+    return "from common8: " + randomstring.generate();
 };

@@ -22,7 +22,12 @@ task installCommonPackage( type: NpmTask, dependsOn: installPackages ) {
     args = [ "install" ]
 }
 
-task installFunctionPackage( type: NpmTask, dependsOn: installCommonPackage ) {
+task installFrontendPackage( type: NpmTask, dependsOn: installCommonPackage ) {
+    workingDir = new File( "$rootDir/front-end-app/" )
+    args = [ "install" ]
+}
+
+task installFunctionPackage( type: NpmTask, dependsOn: installFrontendPackage ) {
     workingDir = new File( "$rootDir/functions/" )
     args = [ "install" ]
 }
