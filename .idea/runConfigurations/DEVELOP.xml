@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="DEVELOP" type="CompoundRunConfigurationType">
+    <toRun name="COMMON_WATCH" type="js.build_tools.npm" />
+    <toRun name="FRONTEND_START" type="js.build_tools.npm" />
+    <toRun name="FUNCTIONS_START" type="js.build_tools.npm" />
+    <toRun name="FUNCTIONS_WATCH" type="js.build_tools.npm" />
+    <method v="2" />
+  </configuration>
+</component>

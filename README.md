@@ -6,6 +6,4 @@
 3. Use IntelliJ run configurations to run the app (top-right conner)
     - BUILD_PROJECT: setup and build the project (first time)
     - CLEAN_PROJECT: clean the project 
-    - FUNCTIONS_RUN: debug the app in browser (development and debugging)
-    - FUNCTIONS_WATCH: watch the code for hot reload (development and debugging)
-    - FUNCTIONS_DEPLOY: deploy the app to Firebase (login required)
+    - DEVELOP: start development
