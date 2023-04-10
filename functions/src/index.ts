@@ -5,6 +5,16 @@ import {SitAndGoGameData} from "common/lib/model/SitAndGoModel";
 
 admin.initializeApp();
 
+export const initSitAndGoGameData = functions.runWith({
+    timeoutSeconds: 540,
+}).https.onRequest(
+    async (request, response) => {
+        ctx.logMgr.info( "Initializing SitAndGo game data ..." );
+        await ctx.service.sitAndGoService.initWithHistoryData();
+        response.send( "OK" );
+    }
+);
+
 export const addSitAndGoGame = functions.https.onRequest(
     async (request, response) => {
         ctx.logMgr.info( "Creating SitAndGo game ..." );
@@ -15,12 +25,13 @@ export const addSitAndGoGame = functions.https.onRequest(
     }
 );
 
-export const initSitAndGoGameData = functions.runWith({
-    timeoutSeconds: 540,
-}).https.onRequest(
+export const getAllSitAndGoGames = functions.https.onRequest(
     async (request, response) => {
-        ctx.logMgr.info( "Initializing SitAndGo game data ..." );
-        await ctx.service.sitAndGoService.initWithHistoryData();
-        response.send( "OK" );
+        ctx.logMgr.info( "Getting all SitAndGo games ..." );
+        const games = await ctx.service.sitAndGoService.getAllGames();
+        // response.set('Access-Control-Allow-Origin', '*');
+        response.send( games );
     }
 );
+
+

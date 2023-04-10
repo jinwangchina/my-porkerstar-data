@@ -32,6 +32,14 @@ export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
     await ctx.dbMgr.getCollection( COL_SITANDGOGAME ).add( game );
 };
 
+export const getAllGames = async (): Promise<Array<SitAndGoGame>> => {
+    const docs = await ctx.dbMgr.getDocuments( COL_SITANDGOGAME );
+    if ( !docs || docs.length === 0 ) {
+        return [];
+    }
+    return docs.map( doc => convertDocToSitAndGoGame( doc ) );
+};
+
 export const getLastGame = async (): Promise<SitAndGoGame | undefined> => {
     const doc = await ctx.dbMgr.getLastDocument( COL_SITANDGOGAME );
     if ( !doc ) {

@@ -17,3 +17,14 @@ export const getLastDocument = async ( colName: string, filter?: FirebaseFiresto
         .get();
     return query?.docs[0];
 }
+
+export const getDocuments = async ( colName: string, filter?: FirebaseFirestore.Filter ): Promise<Array<QueryDocumentSnapshot> | undefined> => {
+    const collection = getCollection( colName );
+    if ( filter ) {
+        collection.where( filter );
+    }
+    const query = await collection
+        .orderBy("createDateTime", "desc")
+        .get();
+    return query?.docs;
+}
