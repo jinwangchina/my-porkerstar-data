@@ -1,22 +1,26 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import {ctx} from "./context/Context";
-import {loadHistoryData} from "./history/HistoryTool";
+import {SitAndGoGameData} from "common/lib/model/SitAndGoModel";
 
 admin.initializeApp();
 
-export const addGame = functions.https.onRequest(
+export const addSitAndGoGame = functions.https.onRequest(
     async (request, response) => {
-        ctx.logMgr.info( "Creating game ..." );
-        const gameData = ctx.service.sitAndGoService.validateSitAndGoGameData( request );
+        ctx.logMgr.info( "Creating SitAndGo game ..." );
+        const gameData = request.body as SitAndGoGameData;
+        gameData.dateTime = new Date( gameData.dateTime );
         await ctx.service.sitAndGoService.addGame( gameData );
         response.send( "OK" );
     }
 );
 
-export const loadHistoryGameData = functions.https.onRequest(
+export const initSitAndGoGameData = functions.runWith({
+    timeoutSeconds: 540,
+}).https.onRequest(
     async (request, response) => {
-        ctx.logMgr.info( "Loading history data ..." );
-        response.send( loadHistoryData() );
+        ctx.logMgr.info( "Initializing SitAndGo game data ..." );
+        await ctx.service.sitAndGoService.initWithHistoryData();
+        response.send( "OK" );
     }
 );

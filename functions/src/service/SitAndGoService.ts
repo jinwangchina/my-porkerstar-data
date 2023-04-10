@@ -1,20 +1,33 @@
 import {firestore} from "firebase-admin";
 import {ctx} from "../context/Context";
 import SitAndGoGame, {SitAndGoGameData, SitAndGoStats} from "common/lib/model/SitAndGoModel";
-import {Request} from "firebase-functions";
+import {loadHistoryData, START_BALANCE_SITANDGO} from "../history/HistoryTool";
 import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
 import Timestamp = firestore.Timestamp;
 
-const START_BALANCE = 5400000;
 const COL_SITANDGOGAME = "SitAndGoGame";
+
+export const initWithHistoryData = async (): Promise<void> => {
+    const historyData = loadHistoryData();
+    for ( const record of historyData.data ) {
+        for ( const game of record.games ) {
+            await addGame( {
+                dateTime: record.dateTime,
+                buyIn: record.buyIn,
+                result: game.result,
+                toWin: game.toWin
+            } as SitAndGoGameData );
+        }
+    }
+};
 
 export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
     const lastGame = await getLastGame();
     const game = {
         createDateTime: new Date(),
         data: gameData,
-        buyInStats: createStats( gameData, 0, lastGame?.buyInStats ),
-        totalStats: createStats( gameData, START_BALANCE, lastGame?.totalStats ),
+        buyInStats: createStats( gameData, 0, lastGame?.data.buyIn === gameData.buyIn ? lastGame.buyInStats : undefined ),
+        totalStats: createStats( gameData, START_BALANCE_SITANDGO, lastGame?.totalStats ),
     } as SitAndGoGame;
     await ctx.dbMgr.getCollection( COL_SITANDGOGAME ).add( game );
 };
@@ -53,10 +66,3 @@ const createStats = ( gameData: SitAndGoGameData, startBalance: number, lastStat
 
 const isWin = ( gameData: SitAndGoGameData ): boolean => gameData.result === "win";
 
-export const validateSitAndGoGameData = ( req: Request ): SitAndGoGameData => {
-    const data = req.body as SitAndGoGameData;
-    if ( typeof data.dateTime === "string" ) {
-        data.dateTime = new Date( data.dateTime );
-    }
-    return data;
-};

@@ -28,12 +28,14 @@ export interface MPOPData {
     ow: number;
 }
 
+export const START_BALANCE_SITANDGO = 5400000;
+
 export const loadHistoryData = (): HistoryData => {
     const rawData = data20230404;
     const lines = getLines( rawData );
     const records = lines.map( line => getHistoryRecord( line ) );
     return {
-        startBalance: 5400000,
+        startBalance: START_BALANCE_SITANDGO,
         data: records
     };
 };
