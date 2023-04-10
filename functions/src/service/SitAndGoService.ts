@@ -1,106 +1,62 @@
 import {firestore} from "firebase-admin";
-import SitAndGoGame from "common/lib/model/sitAndGo/SitAndGoGame";
-import CollectionReference = firestore.CollectionReference;
-import DocumentData = firestore.DocumentData;
+import {ctx} from "../context/Context";
+import SitAndGoGame, {SitAndGoGameData, SitAndGoStats} from "common/lib/model/SitAndGoModel";
+import {Request} from "firebase-functions";
 import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
 import Timestamp = firestore.Timestamp;
-import SitAndGoGameStats from "common/lib/model/sitAndGo/SitAndGoGameStats";
 
-export const createGame = async ( game: SitAndGoGame ): Promise<void> => {
-    await getCollection().add( game );
-    const lastGameStats = await getLastGameStats( game.buyIn );
-    const gameStats = fromStats( game, lastGameStats );
-    await getStatsCollection().add( gameStats );
+const START_BALANCE = 6700000;
+const COL_SITANDGOGAME = "SitAndGoGame";
+
+export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
+    const lastGame = await getLastGame();
+    const game = {
+        createDateTime: new Date(),
+        data: gameData,
+        buyInStats: createStats( gameData, 0, lastGame?.buyInStats ),
+        totalStats: createStats( gameData, START_BALANCE, lastGame?.totalStats ),
+    } as SitAndGoGame;
+    await ctx.dbMgr.getCollection( COL_SITANDGOGAME ).add( game );
 };
 
-export const getLastGame = async (): Promise<SitAndGoGame> => {
-    const query = await getCollection()
-        .orderBy("createDateTime", "desc")
-        .limit(1)
-        .get();
-    return fromDocument( query.docs[0] );
-};
-
-export const getLastGameStats = async ( buyIn: number ): Promise<SitAndGoGameStats | undefined> => {
-    const query = await getStatsCollection()
-        .where( "buyIn", "==", buyIn )
-        .orderBy("createDateTime", "desc")
-        .limit(1)
-        .get();
-    return fromStatsDocument( query.docs[0] );
-};
-
-const fromStatsDocument = ( doc: QueryDocumentSnapshot ): SitAndGoGameStats | undefined => {
+export const getLastGame = async (): Promise<SitAndGoGame | undefined> => {
+    const doc = await ctx.dbMgr.getLastDocument( COL_SITANDGOGAME );
     if ( !doc ) {
         return;
     }
+    return convertDocToSitAndGoGame( doc );
+};
+
+export const convertDocToSitAndGoGame = ( doc: QueryDocumentSnapshot ): SitAndGoGame => {
     const docData = doc.data();
     return {
         ...docData,
         id: doc.id,
-        dateTime: ( docData.dateTime as Timestamp ).toDate(),
-        createDateTime: ( docData.createDateTime as Timestamp ).toDate()
-    } as SitAndGoGameStats;
-};
-
-const fromStats = ( game: SitAndGoGame, stats?: SitAndGoGameStats ): SitAndGoGameStats => {
-    if ( !stats ) {
-        return {
-            createDateTime: new Date(),
-            dateTime: game.dateTime,
-            buyIn: game.buyIn,
-            buyInData: {
-                games: 1,
-                winGames: game.result === "win" ? 1 : 0,
-                winRate: game.result === "win" ? 1 : 0
-            },
-            totalData: {
-                games: 1,
-                winGames: game.result === "win" ? 1 : 0,
-                winRate: game.result === "win" ? 1 : 0
-            }
-        };
-    }
-    return {
-        createDateTime: new Date(),
-        dateTime: game.dateTime,
-        buyIn: game.buyIn,
-        buyInData: {
-            games: stats.buyInData.games + 1,
-            winGames: game.result === "win" ? stats.buyInData.winGames + 1 : stats.buyInData.winGames,
-            winRate: stats.buyInData.winGames / stats.buyInData.games
-        },
-        totalData: {
-            games: stats.totalData.games + 1,
-            winGames: stats.totalData.winGames / stats.totalData.games,
-            winRate: stats.totalData.winGames / stats.totalData.games
-        }
-    };
-};
-
-export const fromDocument = ( doc: QueryDocumentSnapshot ): SitAndGoGame => {
-    const docData = doc.data();
-    return {
-        ...docData,
-        id: doc.id,
-        dateTime: ( docData.dateTime as Timestamp ).toDate(),
         createDateTime: ( docData.createDateTime as Timestamp ).toDate()
     } as SitAndGoGame;
 };
 
-export const fromRequestBody = ( requestBody: any ): SitAndGoGame => {
-    const game = requestBody as SitAndGoGame;
-    if ( typeof game.dateTime === "string" ) {
-        game.dateTime = new Date( game.dateTime );
+const createStats = ( gameData: SitAndGoGameData, startBalance: number, lastStats?: SitAndGoStats ): SitAndGoStats => {
+    const stats = lastStats || {
+        games: 0,
+        winGames: 0,
+        balance: startBalance
+    } as SitAndGoStats;
+    stats.games++;
+    stats.balance = stats.balance - gameData.buyIn;
+    if ( isWin(gameData) ) {
+        stats.winGames++;
+        stats.balance += gameData.toWin;
     }
-    game.createDateTime = new Date();
-    return game;
+    return stats;
 };
 
-const getCollection = (): CollectionReference<DocumentData> => {
-    return firestore().collection( "SitAndGoGame" );
-};
+const isWin = ( gameData: SitAndGoGameData ): boolean => gameData.result === "win";
 
-const getStatsCollection = (): CollectionReference<DocumentData> => {
-    return firestore().collection( "SitAndGoGameStats" );
+export const validateSitAndGoGameData = ( req: Request ): SitAndGoGameData => {
+    const data = req.body as SitAndGoGameData;
+    if ( typeof data.dateTime === "string" ) {
+        data.dateTime = new Date( data.dateTime );
+    }
+    return data;
 };
