@@ -5,7 +5,7 @@ import {Request} from "firebase-functions";
 import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
 import Timestamp = firestore.Timestamp;
 
-const START_BALANCE = 6700000;
+const START_BALANCE = 5400000;
 const COL_SITANDGOGAME = "SitAndGoGame";
 
 export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
