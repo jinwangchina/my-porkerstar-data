@@ -1,27 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import {getMessage} from "common/lib/util/Util";
+import React, {useEffect} from 'react';
+import { getApp } from "firebase/app";
+import {getFunctions, httpsCallable, connectFunctionsEmulator} from 'firebase/functions';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React2 {getMessage()}
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    // useEffect(() => {
+    //     const functions = getFunctions( getApp() );
+    //     connectFunctionsEmulator(functions, "localhost", 5001);
+    //     const getAllSitAndGoGames = httpsCallable( functions, "getAllSitAndGoGames" );
+    //     const games = getAllSitAndGoGames().then( ( result ) => {
+    //         console.log( result );
+    //     } );
+    // }, [] );
+    return (
+        <div className="App">
+            NEW APP
+        </div>
+    );
+};
 
 export default App;
