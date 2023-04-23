@@ -1,10 +1,39 @@
 import {Spinner} from "./Spinner";
 import React from "react";
-import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {SitAndGoData} from "common/lib/model/SitAndGoModel";
 import "./BalanceLineChart.css";
 
 export const BalanceLineChart = ( props: BalanceLineChartProps ) => {
+
+    const getCustomXAxisTickFormatter = () => {
+        let previousYear = 0;
+        let previousMonth = 0;
+        return ( value: any ) => {
+            const date = new Date( value );
+            const dateYear = date.getFullYear();
+            const dateMonth = date.getMonth() + 1;
+            if ( previousYear !== dateYear || previousMonth !== dateMonth ) {
+                previousYear = dateYear;
+                previousMonth = dateMonth;
+                return `${dateYear}.${dateMonth}`;
+            }
+            return "               ";
+        };
+    };
+
+    const customYAxisTickFormatter = ( value: any ) => {
+        return `${value}M`;
+    };
+
+    const customTooltipFormatter = ( value: any, name: any, props: any ): [string, string] => {
+        return [`${value}M`, "Balance"];
+    };
+
+    const customLegendFormatter = ( value: any ) => {
+        return <span>Balance started from 2021.12.12 (Million)</span>;
+    };
+
     if ( !props.data ) {
         return <Spinner />;
     }
@@ -13,9 +42,10 @@ export const BalanceLineChart = ( props: BalanceLineChartProps ) => {
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart width={500} height={300} data={props.data.items}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
+                    <XAxis dataKey="date" tickFormatter={getCustomXAxisTickFormatter()} />
+                    <YAxis tickFormatter={customYAxisTickFormatter} />
+                    <Tooltip formatter={customTooltipFormatter} />
+                    <Legend formatter={customLegendFormatter} />
                     <Line type="monotone" dataKey="balance" stroke="#8884d8" activeDot={{ r: 8 }} />
                 </LineChart>
             </ResponsiveContainer>

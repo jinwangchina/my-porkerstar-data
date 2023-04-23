@@ -25,6 +25,7 @@
     "recharts": "^2.5.0"
   },
   "devDependencies": {
+    "@types/recharts": "^1.8.24",
     "http-proxy-middleware": "^2.0.6"
   },
   "eslintConfig": {
