@@ -1,18 +1,18 @@
 import {firestore} from "firebase-admin";
 import {ctx} from "../context/Context";
-import SitAndGoGame, {SitAndGoGameData, SitAndGoStats} from "common/lib/model/SitAndGoModel";
+import SitAndGoGame, {SitAndGoData, SitAndGoGameData, SitAndGoStats} from "common/lib/model/SitAndGoModel";
 import {loadHistoryData, START_BALANCE_SITANDGO} from "../history/HistoryTool";
 import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
-import Timestamp = firestore.Timestamp;
 
 const COL_SITANDGOGAME = "SitAndGoGame";
 
 export const initWithHistoryData = async (): Promise<void> => {
     const historyData = loadHistoryData();
     for ( const record of historyData.data ) {
-        for ( const game of record.games ) {
+        for ( let i = 0; i < record.games.length; i++ ) {
+            const game = record.games[i];
             await addGame( {
-                dateTime: record.dateTime,
+                dateTime: ctx.utilMgr.addMinutes( new Date( record.dateTime ), i ).toString(),
                 buyIn: record.buyIn,
                 result: game.result,
                 toWin: game.toWin
@@ -24,7 +24,7 @@ export const initWithHistoryData = async (): Promise<void> => {
 export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
     const lastGame = await getLastGame();
     const game = {
-        createDateTime: new Date(),
+        createDateTime: new Date().toString(),
         data: gameData,
         buyInStats: createStats( gameData, 0, lastGame?.data.buyIn === gameData.buyIn ? lastGame.buyInStats : undefined ),
         totalStats: createStats( gameData, START_BALANCE_SITANDGO, lastGame?.totalStats ),
@@ -32,12 +32,15 @@ export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
     await ctx.dbMgr.getCollection( COL_SITANDGOGAME ).add( game );
 };
 
-export const getAllGames = async (): Promise<Array<SitAndGoGame>> => {
+export const getAllGames = async (): Promise<SitAndGoData> => {
     const docs = await ctx.dbMgr.getDocuments( COL_SITANDGOGAME );
-    if ( !docs || docs.length === 0 ) {
-        return [];
+    const data = {
+        games: []
+    } as SitAndGoData;
+    if ( docs && docs.length > 0 ) {
+        data.games = docs.map( doc => convertDocToSitAndGoGame( doc ) );
     }
-    return docs.map( doc => convertDocToSitAndGoGame( doc ) );
+    return data;
 };
 
 export const getLastGame = async (): Promise<SitAndGoGame | undefined> => {
@@ -52,8 +55,7 @@ export const convertDocToSitAndGoGame = ( doc: QueryDocumentSnapshot ): SitAndGo
     const docData = doc.data();
     return {
         ...docData,
-        id: doc.id,
-        createDateTime: ( docData.createDateTime as Timestamp ).toDate()
+        id: doc.id
     } as SitAndGoGame;
 };
 

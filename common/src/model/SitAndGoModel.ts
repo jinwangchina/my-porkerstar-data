@@ -8,7 +8,7 @@ export default interface SitAndGoGame extends DbModel {
 }
 
 export interface SitAndGoGameData {
-    dateTime: Date;
+    dateTime: string;
     buyIn: number;
     toWin: number;
     result: Result;
@@ -18,4 +18,8 @@ export interface SitAndGoStats {
     games: number;
     winGames: number;
     balance: number;
+}
+
+export interface SitAndGoData {
+    games: SitAndGoGame[];
 }

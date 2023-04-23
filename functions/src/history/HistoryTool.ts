@@ -7,7 +7,7 @@ export interface HistoryData {
 }
 
 export interface HistoryRecord {
-    dateTime: Date;
+    dateTime: string;
     buyIn: number;
     games: Array<HistoryGame>;
     mpop: MPOP;
@@ -56,7 +56,7 @@ const getHistoryRecord = ( line: string ): HistoryRecord => {
     const tokens = line.split( " " );
 
     const dateTimeStr = tokens[0];
-    const dateTime = new Date( dateTimeStr );
+    const dateTime = dateTimeStr;
 
     const buyInStr = tokens[1];
     const buyIn = Number( buyInStr.replace( new RegExp(",", "g"), "" ) );

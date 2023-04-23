@@ -19,7 +19,6 @@ export const addSitAndGoGame = functions.https.onRequest(
     async (request, response) => {
         ctx.logMgr.info( "Creating SitAndGo game ..." );
         const gameData = request.body as SitAndGoGameData;
-        gameData.dateTime = new Date( gameData.dateTime );
         await ctx.service.sitAndGoService.addGame( gameData );
         response.send( "OK" );
     }
