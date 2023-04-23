@@ -1,16 +1,12 @@
 import React, {useEffect} from 'react';
-import { getApp } from "firebase/app";
-import {getFunctions, httpsCallable, connectFunctionsEmulator} from 'firebase/functions';
+import {ctx} from "./context/Context";
 
 const App = () => {
-    // useEffect(() => {
-    //     const functions = getFunctions( getApp() );
-    //     connectFunctionsEmulator(functions, "localhost", 5001);
-    //     const getAllSitAndGoGames = httpsCallable( functions, "getAllSitAndGoGames" );
-    //     const games = getAllSitAndGoGames().then( ( result ) => {
-    //         console.log( result );
-    //     } );
-    // }, [] );
+    useEffect(() => {
+        ctx.rpcMgr.call( "getAllSitAndGoGames", {} ).then( ( result ) => {
+            console.log( result );
+        });
+    }, [] );
     return (
         <div className="App">
             NEW APP
