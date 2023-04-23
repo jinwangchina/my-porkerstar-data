@@ -24,7 +24,7 @@ export const getDocuments = async ( colName: string, filter?: FirebaseFirestore.
         collection.where( filter );
     }
     const query = await collection
-        .orderBy("createDateTime", "desc")
+        .orderBy("createDateTime", "asc")
         .get();
     return query?.docs;
 }

@@ -8,11 +8,13 @@ const COL_SITANDGOGAME = "SitAndGoGame";
 
 export const initWithHistoryData = async (): Promise<void> => {
     const historyData = loadHistoryData();
-    for ( const record of historyData.data ) {
-        for ( let i = 0; i < record.games.length; i++ ) {
-            const game = record.games[i];
+    for ( let i = 0; i < historyData.data.length; i++ ) {
+        const record = historyData.data[i];
+        for ( let j = 0; j < record.games.length; j++ ) {
+            const game = record.games[j];
+            const secondsToAdd = (i * 10) + j;
             await addGame( {
-                dateTime: ctx.utilMgr.addMinutes( new Date( record.dateTime ), i ).toString(),
+                dateTime: ctx.utilMgr.addSeconds( new Date( record.dateTime ), secondsToAdd ).toString(),
                 buyIn: record.buyIn,
                 result: game.result,
                 toWin: game.toWin
@@ -24,7 +26,7 @@ export const initWithHistoryData = async (): Promise<void> => {
 export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
     const lastGame = await getLastGame();
     const game = {
-        createDateTime: new Date().toString(),
+        createDateTime: new Date().getTime(),
         data: gameData,
         buyInStats: createStats( gameData, 0, lastGame?.data.buyIn === gameData.buyIn ? lastGame.buyInStats : undefined ),
         totalStats: createStats( gameData, START_BALANCE_SITANDGO, lastGame?.totalStats ),

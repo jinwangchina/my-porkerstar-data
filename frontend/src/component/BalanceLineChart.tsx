@@ -42,7 +42,7 @@ export const convertToBalanceLineChartData = ( gameData: SitAndGoData ): Balance
         items: gameData.games.map( ( item, index ) => ( {
             index: index,
             date: item.data.dateTime,
-            balance: item.totalStats.balance
+            balance: Number( ( item.totalStats.balance / (1000 * 1000) ).toFixed( 1 ) )
         } ) )
     };
 };
