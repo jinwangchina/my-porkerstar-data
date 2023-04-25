@@ -57,6 +57,21 @@ export const getAllGames = async (): Promise<SitAndGoData> => {
     return data;
 };
 
+export const getAllGamesFromHistory = async (): Promise<SitAndGoData> => {
+    const data: SitAndGoData = {
+        games: []
+    };
+    let lastGame: SitAndGoGame | undefined;
+    const getLastGame = async () => lastGame;
+    const saveGame = async ( game: SitAndGoGame ) => {
+        data.games.push( game );
+        lastGame = game;
+    };
+    await initWithHistoryDataImpl( getLastGame, saveGame );
+    return data;
+};
+
+
 export const getLastGame = async (): Promise<SitAndGoGame | undefined> => {
     const doc = await ctx.dbMgr.getLastDocument( COL_SITANDGOGAME );
     if ( !doc ) {
@@ -74,7 +89,7 @@ export const convertDocToSitAndGoGame = ( doc: QueryDocumentSnapshot ): SitAndGo
 };
 
 const createStats = ( gameData: SitAndGoGameData, startBalance: number, lastStats?: SitAndGoStats ): SitAndGoStats => {
-    const stats = lastStats || {
+    const stats = lastStats ? { ...lastStats } : {
         games: 0,
         winGames: 0,
         balance: startBalance

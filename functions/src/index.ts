@@ -27,8 +27,8 @@ export const addSitAndGoGame = functions.https.onRequest(
 export const getAllSitAndGoGames = functions.https.onRequest(
     async (request, response) => {
         ctx.logMgr.info( "Getting all SitAndGo games ..." );
-        const games = await ctx.service.sitAndGoService.getAllGames();
-        // response.set('Access-Control-Allow-Origin', '*');
+        // const games = await ctx.service.sitAndGoService.getAllGames();
+        const games = await ctx.service.sitAndGoService.getAllGamesFromHistory();
         response.send( games );
     }
 );
