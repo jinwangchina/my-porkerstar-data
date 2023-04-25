@@ -19,7 +19,7 @@ const App = () => {
                 phasedLineChartData: convertToPhasedLineChartData( result ),
             });
         });
-    }, [""] );
+    }, [] );
 
     return (
         <div className="mdp-App">

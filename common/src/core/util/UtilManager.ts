@@ -15,10 +15,10 @@ export const addSeconds = ( date: Date, seconds: number ): Date => {
 
 export const formatDateTime = ( dateStr: string ): string => {
     const date = new Date( dateStr );
-    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+    return date.toLocaleDateString( "en-AU" ) + " " + date.toLocaleTimeString( "en-AU" );
 }
 
 export const formatDate = ( dateStr: string ): string => {
     const date = new Date( dateStr );
-    return date.toLocaleDateString();
+    return date.toLocaleDateString( "en-AU" );
 }
