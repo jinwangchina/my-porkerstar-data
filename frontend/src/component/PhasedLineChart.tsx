@@ -42,7 +42,13 @@ export const PhasedLineChart = ( props: PhasedLineChartProps ) => {
         );
     };
 
-    const customLegendFormatter = () => {
+    const customLegendFormatter = ( value: string ) => {
+        if ( value === "bonus" ) {
+            return <span>Bonus {props.data?.bonusDesc}</span>;
+        }
+        if ( value === "winBonus" ) {
+            return <span>WinBonus</span>;
+        }
         return <span>{props.type} started from 12/12/2021</span>;
     };
 
@@ -61,6 +67,7 @@ export const PhasedLineChart = ( props: PhasedLineChartProps ) => {
                     <Tooltip content={customRenderTooltip} />
                     <Legend formatter={customLegendFormatter} />
                     <Line type="monotone" dataKey={dataKey} stroke="#8884d8" activeDot={{ r: 8 }} />
+                    { props.type === "Bonus" && <Line type="monotone" dataKey="winBonus" stroke="#82ca9d" activeDot={{ r: 8 }} /> }
                 </LineChart>
             </ResponsiveContainer>
         </div>
@@ -75,6 +82,7 @@ export type PhasedLineChartProps = {
 export type PhasedLineChartData = {
     items: PhasedLineChartDataItem[];
     milestones: string[];
+    bonusDesc: string;
 };
 
 export type PhasedLineChartDataItem = {
@@ -85,12 +93,15 @@ export type PhasedLineChartDataItem = {
     balance: number;
     winRate: number;
     bonus: number;
+    winBonus: number;
     result: string;
 };
 
 export const convertToPhasedLineChartData = ( gameData: SitAndGoData ): PhasedLineChartData => {
     const milestones: string[] = [];
     let currentBuyIn: number;
+    const bonusTimesMap = new Map<number, number>();
+    const winBonusTimesMap = new Map<number, number>();
     const items = gameData.games.map( ( item, index ) => {
         const buyIn = Number( ( item.data.buyIn / (1000 * 1000) ).toFixed( 3 ) );
         const dateStr = item.data.dateTime;
@@ -100,6 +111,15 @@ export const convertToPhasedLineChartData = ( gameData: SitAndGoData ): PhasedLi
             milestone = `${ctx.utilMgr.formatDate(dateStr)} (BuyIn $${currentBuyIn}M)`;
             milestones.push( milestone );
         }
+        const bonus = item.data.toWin / item.data.buyIn;
+        const bonusKey = bonus;
+        const bonusTimes = bonusTimesMap.get( bonusKey ) || 0;
+        bonusTimesMap.set( bonusKey, bonusTimes + 1 );
+        const winBonus = item.data.result === "win" ? bonus : 0;
+        if ( item.data.result === "win" ) {
+            const winBonusTimes = winBonusTimesMap.get( bonusKey ) || 0;
+            winBonusTimesMap.set( bonusKey, winBonusTimes + 1 );
+        }
         return {
             index: index,
             date: ctx.utilMgr.formatDateTime( dateStr ),
@@ -107,13 +127,28 @@ export const convertToPhasedLineChartData = ( gameData: SitAndGoData ): PhasedLi
             buyIn,
             balance: Number( ( item.totalStats.balance / (1000 * 1000) ).toFixed( 1 ) ),
             winRate: Number( ( item.totalStats.winGames / item.totalStats.games ).toFixed( 3 ) ),
-            bonus: item.data.toWin / item.data.buyIn,
+            bonus,
+            winBonus,
             result: item.data.result
         };
     } );
 
     return {
         items,
-        milestones
+        milestones,
+        bonusDesc: toBonusDesc( bonusTimesMap, winBonusTimesMap, items.length )
     };
+};
+
+const toBonusDesc = ( bonusTimesMap: Map<number, number>, winBonusTimesMap: Map<number, number>, total: number ): string => {
+    let desc = "";
+    const keys = Array.from( bonusTimesMap.keys() ).sort( (a, b) => a - b )
+    for ( const key of keys ) {
+        const bonusTimes = bonusTimesMap.get( key ) || 0;
+        // const bonusRate = `${(Number((bonusTimes / total).toFixed(4)) * 100).toFixed(2)}%`;
+        const winBonusTimes = winBonusTimesMap.get( key ) || 0;
+        // const winBonusRate = `${(Number((winBonusTimes / total).toFixed(4)) * 100).toFixed(2)}%`;
+        desc += ` (${key}x: ${bonusTimes} vs ${winBonusTimes})`;
+    }
+    return desc.slice( 1 );
 };
