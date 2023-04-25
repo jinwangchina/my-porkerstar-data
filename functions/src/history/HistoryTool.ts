@@ -1,5 +1,5 @@
 import {Result} from "common/lib/model/BaseModel";
-import {data20230404} from "./HistoryRawData20230404";
+import {SitAndGoRawData} from "./HistorySitAndGoRawData";
 
 export interface HistoryData {
     startBalance: number;
@@ -31,7 +31,7 @@ export interface MPOPData {
 export const START_BALANCE_SITANDGO = 5400000;
 
 export const loadHistoryData = (): HistoryData => {
-    const rawData = data20230404;
+    const rawData = SitAndGoRawData;
     const lines = getLines( rawData );
     const records = lines.map( line => getHistoryRecord( line ) );
     return {
