@@ -7,23 +7,31 @@ import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
 const COL_SITANDGOGAME = "SitAndGoGame";
 
 export const initWithHistoryData = async (): Promise<void> => {
+    await initWithHistoryDataImpl( getLastGame, addGameToDb );
+};
+
+const initWithHistoryDataImpl = async ( getLastGame: () => Promise<SitAndGoGame | undefined>, saveGame: (game: SitAndGoGame) => Promise<any> ): Promise<void> => {
     const historyData = loadHistoryData();
     for ( let i = 0; i < historyData.data.length; i++ ) {
         const record = historyData.data[i];
         for ( let j = 0; j < record.games.length; j++ ) {
             const game = record.games[j];
             const secondsToAdd = (i * 10) + j;
-            await addGame( {
+            await addGameImpl( {
                 dateTime: ctx.utilMgr.addSeconds( new Date( record.dateTime ), secondsToAdd ).toString(),
                 buyIn: record.buyIn,
                 result: game.result,
                 toWin: game.toWin
-            } as SitAndGoGameData );
+            } as SitAndGoGameData, getLastGame, saveGame );
         }
     }
 };
 
 export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
+    await addGameImpl( gameData, getLastGame, addGameToDb );
+};
+
+const addGameImpl = async ( gameData: SitAndGoGameData, getLastGame: () => Promise<SitAndGoGame | undefined>, saveGame: (game: SitAndGoGame) => Promise<any> ): Promise<void> => {
     const lastGame = await getLastGame();
     const game = {
         createDateTime: new Date().getTime(),
@@ -31,6 +39,10 @@ export const addGame = async ( gameData: SitAndGoGameData ): Promise<void> => {
         buyInStats: createStats( gameData, 0, lastGame?.data.buyIn === gameData.buyIn ? lastGame.buyInStats : undefined ),
         totalStats: createStats( gameData, START_BALANCE_SITANDGO, lastGame?.totalStats ),
     } as SitAndGoGame;
+    await saveGame( game );
+};
+
+const addGameToDb = async ( game: SitAndGoGame ): Promise<void> => {
     await ctx.dbMgr.getCollection( COL_SITANDGOGAME ).add( game );
 };
 
