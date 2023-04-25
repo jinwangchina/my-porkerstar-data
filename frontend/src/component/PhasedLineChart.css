@@ -1,5 +1,6 @@
-.mpd-BalanceLineChart {
-    height: 600px;
+.mpd-PhasedLineChart {
+    height: 300px;
+    margin: 30px;
 }
 
 .mdp-ChartTooltip {

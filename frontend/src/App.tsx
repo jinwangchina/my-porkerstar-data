@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {ctx} from "./context/Context";
-import {BalanceLineChart, BalanceLineChartData, convertToBalanceLineChartData} from "./component/BalanceLineChart";
+import {convertToPhasedLineChartData, PhasedLineChart, PhasedLineChartData} from "./component/PhasedLineChart";
 import "./App.css";
 import {PageHeader} from "./component/PageHeader";
 import {SitAndGoData} from "common/lib/model/SitAndGoModel";
@@ -14,7 +14,7 @@ const App = () => {
             setState( {
                 totalGames: lastGame.totalStats.games,
                 winGames: lastGame.totalStats.winGames,
-                balanceLineChartData: convertToBalanceLineChartData( result ),
+                phasedLineChartData: convertToPhasedLineChartData( result ),
             });
         });
     }, [""] );
@@ -25,7 +25,9 @@ const App = () => {
                 title="Sit&Go Data"
                 subTitle={state && `Total Games: ${state.totalGames.toLocaleString()} (about ${(state.totalGames * 30).toLocaleString()} hands), Win Rate: ${(state.winGames / state.totalGames * 100).toFixed(1)}%`}
             />
-            <BalanceLineChart data={state?.balanceLineChartData} />
+            <PhasedLineChart type={"Balance"} data={state?.phasedLineChartData} />
+            <PhasedLineChart type={"WinRate"} data={state?.phasedLineChartData} />
+            <PhasedLineChart type={"Bonus"} data={state?.phasedLineChartData} />
         </div>
     );
 };
@@ -33,7 +35,7 @@ const App = () => {
 type AppState = {
     totalGames: number;
     winGames: number;
-    balanceLineChartData: BalanceLineChartData;
+    phasedLineChartData: PhasedLineChartData;
 };
 
 export default App;
