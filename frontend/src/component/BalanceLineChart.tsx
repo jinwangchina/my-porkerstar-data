@@ -1,6 +1,6 @@
 import {Spinner} from "./Spinner";
 import React from "react";
-import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {Brush, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {SitAndGoData} from "common/lib/model/SitAndGoModel";
 import "./BalanceLineChart.css";
 import {ctx} from "../context/Context";
