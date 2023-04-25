@@ -12,3 +12,13 @@ export const addSeconds = ( date: Date, seconds: number ): Date => {
     const newTime = date.getTime() + ( seconds * 1000 );
     return new Date( newTime );
 };
+
+export const formatDateTime = ( dateStr: string ): string => {
+    const date = new Date( dateStr );
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+}
+
+export const formatDate = ( dateStr: string ): string => {
+    const date = new Date( dateStr );
+    return date.toLocaleDateString();
+}

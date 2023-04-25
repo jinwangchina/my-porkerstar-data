@@ -3,12 +3,13 @@ import React from "react";
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {SitAndGoData} from "common/lib/model/SitAndGoModel";
 import "./BalanceLineChart.css";
+import {ctx} from "../context/Context";
 
 export const BalanceLineChart = ( props: BalanceLineChartProps ) => {
 
     const customRenderXAxisTick = ( tickProps: any ) => {
         if ( tickProps.index == 0 ) {
-            return <text x={tickProps.x + 100} y={tickProps.y + 35} fill="#666" textAnchor="middle">2021.12.12 (BuyIn $0.01M and $0.025M)</text>;
+            return <text x={tickProps.x + 100} y={tickProps.y + 35} fill="#666" textAnchor="middle">12/12/2021 (BuyIn $0.01M and $0.025M)</text>;
         } else if ( tickProps.index == 1 ) {
             return <></>;
         }
@@ -34,7 +35,7 @@ export const BalanceLineChart = ( props: BalanceLineChartProps ) => {
     };
 
     const customLegendFormatter = ( value: any ) => {
-        return <span>Balance started from 2021.12.12 (Million)</span>;
+        return <span>Balance started from 12/12/2021 (Million)</span>;
     };
 
     if ( !props.data ) {
@@ -78,19 +79,16 @@ export const convertToBalanceLineChartData = ( gameData: SitAndGoData ): Balance
     let currentBuyIn: number;
     const items = gameData.games.map( ( item, index ) => {
         const buyIn = Number( ( item.data.buyIn / (1000 * 1000) ).toFixed( 3 ) );
+        const dateStr = item.data.dateTime;
         let milestone = "";
         if ( currentBuyIn !== buyIn ) {
             currentBuyIn = buyIn;
-            const date = new Date( item.data.dateTime );
-            const dateYear = date.getFullYear();
-            const dateMonth = date.getMonth() + 1;
-            const dateDay = date.getDate();
-            milestone = `${dateYear}.${dateMonth}.${dateDay} (BuyIn $${currentBuyIn}M)`;
+            milestone = `${ctx.utilMgr.formatDate(dateStr)} (BuyIn $${currentBuyIn}M)`;
             milestones.push( milestone );
         }
         return {
             index: index,
-            date: item.data.dateTime,
+            date: ctx.utilMgr.formatDateTime( dateStr ),
             milestone,
             buyIn,
             balance: Number( ( item.totalStats.balance / (1000 * 1000) ).toFixed( 1 ) )
